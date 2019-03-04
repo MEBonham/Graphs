@@ -51,6 +51,16 @@ class Graph:
                 for neighbor in self.vertices[vertex]:
                     s.push(neighbor)
 
+    def dft_recursive(self, starting_v_id, visited=None):
+        if visited is None:
+            visited = set()
+        if starting_v_id in visited:
+            return
+        print(starting_v_id)
+        visited.add(starting_v_id)
+        for neighbor in self.vertices[starting_v_id]:
+            self.dft_recursive(neighbor, visited)
+
 
 graph = Graph()  # Instantiate your graph
 graph.add_vertex('1')
@@ -70,5 +80,8 @@ graph.add_directed_edge('4', '6')
 graph.add_directed_edge('4', '7')
 graph.add_directed_edge('7', '1')
 graph.add_directed_edge('7', '6')
+
 print(graph.vertices)
-graph.dft('1')
+graph.dft_recursive('1')
+print()
+graph.dft_recursive('1')
