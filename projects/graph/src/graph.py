@@ -61,6 +61,30 @@ class Graph:
         for neighbor in self.vertices[starting_v_id]:
             self.dft_recursive(neighbor, visited)
 
+    def bfs(self, starting_v_id, destination_v_id):
+        if starting_v_id not in self.vertices or destination_v_id not in self.vertices:
+            raise IndexError("This graph does not have both of those vertices")
+        q = Queue()
+        path = [starting_v_id]
+        q.enqueue({ starting_v_id: path })
+        visited = set()
+        while q.size() > 0:
+            item = q.dequeue()
+            for vertex, path in item.items():
+                # print(f'{vertex}: {path}')
+                if vertex == destination_v_id:
+                    return path
+                if vertex not in visited:
+                    visited.add(vertex)
+                    for neighbor in self.vertices[vertex]:
+                        # print(path[:])
+                        # print(neighbor)
+                        # print((path[:]).append(neighbor))
+                        new_path = path[:]
+                        new_path.append(neighbor)
+                        q.enqueue({ neighbor: new_path })
+        return None
+
 
 graph = Graph()  # Instantiate your graph
 graph.add_vertex('1')
@@ -81,7 +105,8 @@ graph.add_directed_edge('4', '7')
 graph.add_directed_edge('7', '1')
 graph.add_directed_edge('7', '6')
 
-print(graph.vertices)
-graph.dft_recursive('1')
-print()
-graph.dft_recursive('1')
+# print(graph.vertices)
+# graph.dft_recursive('1')
+# print()
+# graph.dft_recursive('1')
+print(graph.bfs('3', '2'))
