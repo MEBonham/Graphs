@@ -69,20 +69,36 @@ class Graph:
         q.enqueue({ starting_v_id: path })
         visited = set()
         while q.size() > 0:
-            item = q.dequeue()
-            for vertex, path in item.items():
-                # print(f'{vertex}: {path}')
+            dictionary = q.dequeue()
+            for vertex, path in dictionary.items():
                 if vertex == destination_v_id:
                     return path
                 if vertex not in visited:
                     visited.add(vertex)
                     for neighbor in self.vertices[vertex]:
-                        # print(path[:])
-                        # print(neighbor)
-                        # print((path[:]).append(neighbor))
                         new_path = path[:]
                         new_path.append(neighbor)
                         q.enqueue({ neighbor: new_path })
+        return None
+
+    def dfs(self, starting_v_id, destination_v_id):
+        if starting_v_id not in self.vertices or destination_v_id not in self.vertices:
+            raise IndexError("This graph does not have both of those vertices")
+        s = Stack()
+        path = [starting_v_id]
+        s.push({ starting_v_id: path })
+        visited = set()
+        while s.size() > 0:
+            dictionary = s.pop()
+            for vertex, path in dictionary.items():
+                if vertex == destination_v_id:
+                    return path
+                if vertex not in visited:
+                    visited.add(vertex)
+                    for neighbor in self.vertices[vertex]:
+                        new_path = path[:]
+                        new_path.append(neighbor)
+                        s.push({ neighbor: new_path })
         return None
 
 
@@ -109,4 +125,4 @@ graph.add_directed_edge('7', '6')
 # graph.dft_recursive('1')
 # print()
 # graph.dft_recursive('1')
-print(graph.bfs('3', '2'))
+print(graph.dfs('7', '3'))
