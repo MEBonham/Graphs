@@ -1,5 +1,21 @@
 from random import shuffle
 
+class Queue:
+    def __init__(self):
+        self.queue = []
+
+    def enqueue(self, val):
+        self.queue.append(val)
+
+    def dequeue(self):
+        if len(self.queue) == 0:
+            return None
+        else:
+            return self.queue.pop(0)
+    
+    def size(self):
+        return len(self.queue)
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -14,9 +30,6 @@ class SocialGraph:
         """
         Creates a bi-directional friendship
         """
-        print(self.friendships)
-        print(userID)
-        print(friendID)
         if userID == friendID:
             print("WARNING: You cannot be friends with yourself")
         elif friendID in self.friendships[userID] or userID in self.friendships[friendID]:
@@ -77,7 +90,20 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        q = Queue()
+        path = [userID]
+        q.enqueue({ userID: path })
+
+        while q.size() > 0:
+            node_info = q.dequeue()
+            for user, path in node_info.items():
+                if user not in visited:
+                    visited[user] = path
+                    for friend in self.friendships[user]:
+                        new_path = path[:]
+                        new_path.append(friend)
+                        q.enqueue({ friend: new_path })
+
         return visited
 
 
@@ -85,5 +111,22 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populateGraph(10, 2)
     print(sg.friendships)
-    # connections = sg.getAllSocialPaths(1)
-    # print(connections)
+    connections = sg.getAllSocialPaths(1)
+    print(connections)
+
+
+'''
+3. Questions
+
+To create 100 users with an average of 10 friends each, you would need to call addFriendship() 500 times, because that creates 1000
+friendship entries (since each friendship shows up twice, once on each end). Which is 10 friendships for each user.
+
+I honestly don't know how to do the math on the other one. Since these random friendships have no "cliqueiness" (i.e. if A is friends
+with B and C, B and C are no more likely to be friends with each other), my hunch is that extended social networks would actually
+be very large. Perhaps even all 1000 users would be in one extended social network -- though not necessarily, since you could still have
+users with less than 5 friendships, even singletons.
+
+If all 1000 users ARE in one extended network, then the average degree of separation would be quite low, maybe 4, since each degree
+exponentially increases in number of people that it covers.
+
+'''
