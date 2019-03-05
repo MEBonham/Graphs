@@ -1,4 +1,4 @@
-
+from random import shuffle
 
 class User:
     def __init__(self, name):
@@ -14,6 +14,9 @@ class SocialGraph:
         """
         Creates a bi-directional friendship
         """
+        print(self.friendships)
+        print(userID)
+        print(friendID)
         if userID == friendID:
             print("WARNING: You cannot be friends with yourself")
         elif friendID in self.friendships[userID] or userID in self.friendships[friendID]:
@@ -47,8 +50,22 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(numUsers):
+            self.addUser(str(i))
 
         # Create friendships
+        n = numUsers * avgFriendships // 2
+        max_friendships = (numUsers ** 2 - numUsers) / 2
+        if n <= max_friendships:
+            all_friendships = []
+            for i in range(numUsers):
+                for j in range(i + 1, numUsers):
+                    all_friendships.append((i + 1, j + 1))
+            shuffle(all_friendships)
+            for fr in all_friendships[0:n]:
+                self.addFriendship(fr[0], fr[1])
+        else:
+            print("WARNING: Too many average friendships for this population.")
 
     def getAllSocialPaths(self, userID):
         """
@@ -68,5 +85,5 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populateGraph(10, 2)
     print(sg.friendships)
-    connections = sg.getAllSocialPaths(1)
-    print(connections)
+    # connections = sg.getAllSocialPaths(1)
+    # print(connections)
