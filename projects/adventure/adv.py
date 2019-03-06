@@ -23,6 +23,19 @@ traversalPath = []
 traversal_graph = {}
 mystery_exits = 0
 
+class Queue:
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, val):
+        self.queue.append(val)
+    def dequeue(self):
+        if len(self.queue) == 0:
+            return None
+        else:
+            return self.queue.pop(0)
+    def size(self):
+        return len(self.queue)
+
 def opposite(direction):
     if direction == 'n':
         return 's'
@@ -48,9 +61,44 @@ def log_connection(origin_rm_id, direction, destination_rm_id):
     traversal_graph[destination_rm_id][opposite(direction)] = origin_rm_id
     mystery_exits -= 2
 
+# def has_mystery_door(rm_id):
+#     if rm_id not in traversal_graph:
+#         raise IndexError("This room does not have any exits registered, mystery or otherwise")
+#     elif '?' in traversal_graph[rm_id].values():
+#         return True
+#     else:
+#         return False
+
+def choose_random_mystery_door():
+    options = []
+    for direction, destination_rm_id in traversal_graph[player.currentRoom.id]:
+        if destination_rm_id == '?':
+            options.append(direction)
+    random.shuffle(options)
+    return options[0]
+
+def bfs_for_mystery_door(origin_rm_id):
+    q = Queue()
+    path = [origin_rm_id]
+    q.enqueue(path)
+    visited = set()
+    while q.size() > 0:
+        path = q.dequeue()
+        rm_id = path[-1]
+        if rm_id not in visited:
+            visited.add(rm_id)
+            for door, val in traversal_graph[rm_id]:
+                if val == '?':
+                    return path
+                else:
+                    new_path = path[:]
+                    new_path.append(val)
+                    q.enqueue(new_path)
+    return None
+
 log_current_room()
 while mystery_exits > 0:
-    # If there is no adjacent '?', perform a BFS and move to the nearest '?'
+    # perform a BFS and move to the nearest '?' if it's not available from the current room
 
     # Choose a random direction with a '?' from the current room
     direction = choose_random_mystery_door()
