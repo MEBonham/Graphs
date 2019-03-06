@@ -19,10 +19,21 @@ world.loadGraph(roomGraph)
 player = Player("Name", world.startingRoom)
 
 # FILL THIS IN
-# traversalPath = ['n', 's']
 traversalPath = []
 traversal_graph = {}
 mystery_exits = 0
+
+def opposite(direction):
+    if direction == 'n':
+        return 's'
+    elif direction == 's':
+        return 'n'
+    elif direction == 'w':
+        return 'e'
+    elif direction == 'e':
+        return 'w'
+    else:
+        return None
 
 def log_current_room():
     if player.currentRoom.id not in traversal_graph:
@@ -32,9 +43,24 @@ def log_current_room():
             mystery_exits += 1
         traversal_graph[player.currentRoom.id] = new_dict
 
+def log_connection(origin_rm_id, direction, destination_rm_id):
+    traversal_graph[origin_rm_id][direction] = destination_rm_id
+    traversal_graph[destination_rm_id][opposite(direction)] = origin_rm_id
+    mystery_exits -= 2
+
 log_current_room()
 while mystery_exits > 0:
-    
+    # If there is no adjacent '?', perform a BFS and move to the nearest '?'
+
+    # Choose a random direction with a '?' from the current room
+    direction = choose_random_mystery_door()
+    # Move in the direction of the chosen '?' and log the results
+    prev_room = player.currentRoom
+    traversalPath.append(direction)
+    player.travel(direction)
+    log_current_room()
+    log_connection(prev_room.id, direction, player.currentRoom.id)
+
 
 
 
