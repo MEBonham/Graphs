@@ -132,9 +132,7 @@ while mystery_exits > 0:
     path = bfs_for_mystery_door(player.currentRoom.id)
     if len(path) > 1:
         path = path[1:]
-        # for rm_id in path:
         for direction in path:
-            # direction = dir_to_known_rm(player.currentRoom.id, rm_id)
             traversalPath.append(direction)
             player.travel(direction)
     # Choose a random direction with a '?' from the current room
