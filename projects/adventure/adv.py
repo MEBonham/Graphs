@@ -79,33 +79,52 @@ def choose_random_mystery_door():
     random.shuffle(options)
     return options[0]
 
+# def bfs_for_mystery_door(origin_rm_id):
+#     q = Queue()
+#     path = [origin_rm_id]
+#     q.enqueue(path)
+#     visited = set()
+#     while q.size() > 0:
+#         path = q.dequeue()
+#         rm_id = path[-1]
+#         if rm_id not in visited:
+#             visited.add(rm_id)
+#             for door, val in traversal_graph[rm_id].items():
+#                 if val == '?':
+#                     return path
+#                 else:
+#                     new_path = path[:]
+#                     new_path.append(val)
+#                     q.enqueue(new_path)
+#     return None
+
 def bfs_for_mystery_door(origin_rm_id):
     q = Queue()
-    path = [origin_rm_id]
-    q.enqueue(path)
+    directions = [None]
+    q.enqueue({ origin_rm_id: directions })
     visited = set()
     while q.size() > 0:
-        path = q.dequeue()
-        rm_id = path[-1]
-        if rm_id not in visited:
-            visited.add(rm_id)
-            for door, val in traversal_graph[rm_id].items():
-                if val == '?':
-                    return path
-                else:
-                    new_path = path[:]
-                    new_path.append(val)
-                    q.enqueue(new_path)
+        dictionary = q.dequeue()
+        for rm_id, directions in dictionary.items():
+            if rm_id not in visited:
+                visited.add(rm_id)
+                for door, val in traversal_graph[rm_id].items():
+                    if val == '?':
+                        return directions
+                    else:
+                        new_directions = directions[:]
+                        new_directions.append(door)
+                        q.enqueue({ val: new_directions })
     return None
 
-def dir_to_known_rm(origin_rm_id, destination_rm_id):
-    if origin_rm_id not in traversal_graph:
-        raise IndexError("That room is not logged.")
-    else:
-        for door, val in traversal_graph[origin_rm_id].items():
-            if val == destination_rm_id:
-                return door
-        return None
+# def dir_to_known_rm(origin_rm_id, destination_rm_id):
+#     if origin_rm_id not in traversal_graph:
+#         raise IndexError("That room is not logged.")
+#     else:
+#         for door, val in traversal_graph[origin_rm_id].items():
+#             if val == destination_rm_id:
+#                 return door
+#         return None
 
 log_current_room()
 while mystery_exits > 0:
@@ -113,8 +132,9 @@ while mystery_exits > 0:
     path = bfs_for_mystery_door(player.currentRoom.id)
     if len(path) > 1:
         path = path[1:]
-        for rm_id in path:
-            direction = dir_to_known_rm(player.currentRoom.id, rm_id)
+        # for rm_id in path:
+        for direction in path:
+            # direction = dir_to_known_rm(player.currentRoom.id, rm_id)
             traversalPath.append(direction)
             player.travel(direction)
     # Choose a random direction with a '?' from the current room
@@ -140,6 +160,7 @@ for move in traversalPath:
     visited_rooms.add(player.currentRoom)
 
 if len(visited_rooms) == len(roomGraph):
+    print(traversalPath)
     print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
